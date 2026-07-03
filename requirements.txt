@@ -1,0 +1,5 @@
+New-Item -Path abc.txt -ItemType File
+
+mkdir
+
+pip install "library"
