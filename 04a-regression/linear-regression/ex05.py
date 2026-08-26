@@ -163,7 +163,50 @@ print("Vì vậy MAE/RMSE cũng đang được tính theo đơn vị $100,000.")
 
 
 
+'''
+Đánh giá tổng quan model
 
+Dataset: 20,640 mẫu
+Feature: 8
+Train: 16,512 mẫu (80%)
+Test: 4,128 mẫu (20%)
+
+20,640 dữ liệu
+      ↓
+X = 8 Features
+y = MedHouseVal
+      ↓
+80% Train / 20% Test
+      ↓
+Linear Regression
+      ↓
+y_pred
+      ↓
+Đánh giá
+
+Kết quả: ( Tính theo target có đơn vị 100.000 USB)
+MAE  = 0.5332 #Trung bình dự đoán của model lệch khoảng 53.320 USD so với giá thực tế.
+==> Mức sai số không đáng kể
+MSE  = 0.5559 #Trung bình của (giá thật - giá dự đoán)²
+==> MSE phạt mạnh những dự đoán sai nhiều.
+==> Không đáng giá vì chủ yếu dùng để đánh giá và so sánh model.
+RMSE = 0.7456 #Mức sai số dự đoán điển hình theo RMSE khoảng 74.560 USD.
+==>  RMSE > MAE ==> Điều này cho thấy trong dữ liệu có một số trường hợp model dự đoán sai khá xa, 
+vì RMSE nhạy với các sai số lớn.
+R²   = 0.5758 #Đây là chỉ số chú ý nhất.
+==> Model Linear Regression giải thích được khoảng 57,58% sự biến thiên của giá nhà trong tập test.
+==> Còn khoảng:
+100% - 57.58%
+= 42.42%chưa được model giải thích.
+
+Mức độ đánh giá:
+R² = 1.0      → rất tốt
+R² gần 1      → tốt
+R² ≈ 0.58     → trung bình/khá
+R² gần 0      → khả năng giải thích thấp
+R² < 0        → model rất kém
+
+'''
 
 
 
