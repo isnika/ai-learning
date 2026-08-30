@@ -1,5 +1,4 @@
-learn AI with Nika
-
+learn AI 
 #  AI Learning Roadmap
 ##  Mục lục
 
