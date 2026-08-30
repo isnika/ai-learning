@@ -197,7 +197,7 @@ R²   = 0.5758 #Đây là chỉ số chú ý nhất.
 ==> Model Linear Regression giải thích được khoảng 57,58% sự biến thiên của giá nhà trong tập test.
 ==> Còn khoảng:
 100% - 57.58%
-= 42.42%chưa được model giải thích.
+= 42.42%chưa được model giải thích.c
 
 Mức độ đánh giá:
 R² = 1.0      → rất tốt
