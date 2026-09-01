@@ -1,7 +1,7 @@
 '''
 BẢN CODE THỨ 2 Ở DƯỚI SẼ ĐẦY ĐỦ HƠN BẢN 1 ĐẦU
 Bài tậo cơ bản thực hành
-Dự đoán sinh viên có đậi hay không đậi dựa trên số giờ học
+Dự đoán sinh viên có đậi hay không đậu dựa trên số giờ học
 
 Sự khác biệt giữa
 predict()
