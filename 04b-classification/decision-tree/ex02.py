@@ -162,6 +162,50 @@ plt.tight_layout()
 plt.show()
 
 #3. Train/test split
+print ("----- Train/Test Split -----")
+X_train , X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size = 0.2,
+    random_state = 42,
+    stratify = y
+)
+
+print("X_train shape:", X_train.shape)
+print("X_test shape :", X_test.shape)
+print("y_train shape:", y_train.shape)
+print("y_test shape :", y_test.shape)
+
+print("\nTraining samples:", len(X_train))
+print("Testing samples :", len(X_test))
+
+#4. train decision tree classifier
+print("-----Train Decision Tree Classifier-----")
+model = DecisionTreeClassifier(
+    criterion="gini",
+    random_state=42,
+)
+
+model.fit(X_train, y_train)
+
+print("\nModel trained successfully!")
+
+#5. Predict
+print("----- Predict -----")
+
+# Predict trên TRAIN
+y_train_pred = model.predict(X_train)
+
+# Predict trên TEST
+y_test_pred = model.predict(X_test)
+
+print("\nFirst 10 actual test values:")
+print(y_test.values[:10])
+
+print("First 10 predicted test values:")
+print(y_test_pred[:10])
+
+
 
 
 
