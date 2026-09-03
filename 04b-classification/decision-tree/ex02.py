@@ -341,14 +341,13 @@ def analyxe_fit(train_acc, test_acc):
     Overfitting: Train rất cao nhưng Test thấp hơn đáng kể.
     """
     gap = train_acc - test_acc
-    if train_acc < 0.90 and test_acc < 0.90:
+    if train_accuracy < 0.8 and test_accuracy < 0.8:
         return "Underfitting"
-    elif train_acc >= 0.90 and test_acc >= 0.90 and gap < 0.10:
-        return "Good fitting"
-    elif train_acc >= 0.95 and gap >= 0.10:
+    elif gap >= 0.05:
         return "Overfitting"
     else:
-        return "Needs further analysis" # Can phan tich them nua
+        return  "Good fitting"
+
 result_df["fitting"] = result_df.apply(
     lambda row: analyxe_fit(
         row["train_accuracy"],
@@ -443,3 +442,11 @@ Fitting:
 print("\nGini vs Entropy:")
 print( criterion_df.to_string( index=False ) )
 print("\nProgram finished successfully!")
+
+"""
+Model Decision Tree đạt kết quả tốt trên tập Iris. Với các giá trị max_depth được thử nghiệm, max_depth = 3 cho kết quả tốt nhất, với Training Accuracy = 98.33%, 
+Testing Accuracy = 96.67% và Accuracy Gap = 1.67%. Confusion Matrix cho thấy model phân loại chính xác toàn bộ class Setosa, trong khi vẫn có một số nhầm lẫn 
+giữa Versicolor và Virginica. Feature Importance cho thấy Petal Length và Petal Width là hai đặc trưng quan trọng nhất. So sánh Gini và Entropy cho thấy cả hai 
+đạt cùng Testing Accuracy = 93.33% trong thí nghiệm này. Nhìn chung, model max_depth = 3 có khả năng tổng quát hóa tốt và là lựa chọn phù hợp nhất trong các cấu hình đã thử.
+
+"""
