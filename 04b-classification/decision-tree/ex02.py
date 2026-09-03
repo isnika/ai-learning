@@ -44,8 +44,7 @@ import numpy as np
 
 from sklearn.datasets import  load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import  StandardScaler
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -148,6 +147,7 @@ plt.xticks(
 )
 
 plt.tight_layout()
+plt.savefig("ex02_iris_class_distribution.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 #2.5 Visualization: Feature distributions HInh anh truc quan: Phan bo dac trung(x)
@@ -159,6 +159,7 @@ df[iris.feature_names].hist(
 
 plt.suptitle("Iris Feature Distributions")
 plt.tight_layout()
+plt.savefig("ex02_iris_feature_distributions.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 #3. Train/test split
@@ -205,10 +206,240 @@ print(y_test.values[:10])
 print("First 10 predicted test values:")
 print(y_test_pred[:10])
 
+#6. Accuracy
+print("----- Accuracy -----")
+train_accuracy = accuracy_score(y_train, y_train_pred)
+test_accuracy = accuracy_score (y_test, y_test_pred)
+print("\nTrain Accuracy:", train_accuracy)
+print("Test Accuracy:", test_accuracy)
 
+#7.Confusion matrix
+print("----- Confusion Matrix -----") #ma tran nham lan
+cm = confusion_matrix(y_test, y_test_pred)
+print("\nConfusion Matrix:")
+print(cm)
 
+#visualization Confusion matrix
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=iris.target_names,
+)
 
+disp.plot()
+plt.title("Decision Tree - Confusion Matrix")
+plt.tight_layout()
+plt.savefig("ex02_confusion_matrix.png", dpi=300, bbox_inches="tight")
+plt.show()
 
+#8. classification report
+print("----- Classification Report -----")
+print(classification_report(
+    y_test,
+    y_test_pred,
+    target_names=iris.target_names,
+)
+)
 
+#9. Visualization decision tree
 
+print("----- Visualization Decision Tree -----")
 
+plt.figure(figsize=(18, 12))
+plot_tree(
+    model,
+    feature_names=iris.feature_names,
+    class_names=iris.target_names,
+    filled=True,
+    rounded=True,
+    precision=2
+)
+plt.title("Decision Tree Classifier - Iris")
+
+plt.tight_layout()
+plt.savefig("ex02_decision_tree_classifier.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+#10.Feature importance
+print("----- Feature Importance -----")
+fea_importance = pd.DataFrame(
+    {
+        "Feature": iris.feature_names,
+        "Importance": model.feature_importances_,
+    }
+)
+fea_importance = fea_importance.sort_values(
+    by="Importance",
+    ascending=False
+)
+print("\nFeature Importance:")
+print(fea_importance)
+
+#Visualization feature importance
+plt.figure(figsize=(10, 6))
+plt.bar(
+    fea_importance["Feature"],
+    fea_importance["Importance"]
+)
+
+plt.title("Decision Tree Feature Importance")
+plt.xlabel("Feature")
+plt.ylabel("Importance")
+plt.xticks(
+    rotation=20,
+    ha="right",
+)
+plt.tight_layout()
+plt.savefig("ex02_feature_importance.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+#11. Thu nhieu max depth
+
+print("----- Test Max_Depth -----")
+depth = [
+    1,
+    2,
+    3,
+    5,
+    None
+]
+result = []
+
+for dept in depth:
+    tree_model = DecisionTreeClassifier(
+        criterion="gini",
+        max_depth=dept,
+        random_state=42,
+    )
+
+    tree_model.fit(X_train, y_train)
+
+    train_pred = tree_model.predict(X_train)
+    test_pred = tree_model.predict(X_test)
+    train_acc = accuracy_score(y_train, train_pred)
+    test_acc = accuracy_score(y_test, test_pred)
+    gap = train_acc - test_acc
+    result.append(
+        {
+            "max_depth": dept,
+            "train_accuracy": train_acc,
+            "test_accuracy": test_acc,
+            "gap": gap,
+        }
+    )
+#12. comparison table
+result_df = pd.DataFrame(result)
+print("----- MAX_DEPTH COMPARISON ----- ")
+print( result_df.to_string( index=False ) )
+
+#13. Analyze fitting - Phan tich su phu hop
+print("----- Fitting Analysis -----")
+
+def analyxe_fit(train_acc, test_acc):
+    """ Educational heuristic.
+    Underfitting: Train và Test đều thấp.
+    Good fitting: Train và Test đều cao và khoảng cách nhỏ.
+    Overfitting: Train rất cao nhưng Test thấp hơn đáng kể.
+    """
+    gap = train_acc - test_acc
+    if train_acc < 0.90 and test_acc < 0.90:
+        return "Underfitting"
+    elif train_acc >= 0.90 and test_acc >= 0.90 and gap < 0.10:
+        return "Good fitting"
+    elif train_acc >= 0.95 and gap >= 0.10:
+        return "Overfitting"
+    else:
+        return "Needs further analysis" # Can phan tich them nua
+result_df["fitting"] = result_df.apply(
+    lambda row: analyxe_fit(
+        row["train_accuracy"],
+        row["test_accuracy"],
+    ),
+    axis=1
+)
+print(
+    result_df[
+        [
+            "max_depth",
+            "train_accuracy",
+            "test_accuracy",
+            "gap",
+            "fitting",
+        ]
+    ].to_string(index=False)
+)
+
+#14. VISUALIZE TRAINING VS TESTING ACCURACY
+print("----- TRAINING VS TESTING ACCURACY -----")
+
+depth_labels = result_df[
+    "max_depth"
+].astype(str)
+
+plt.figure( figsize=(10, 6) )
+plt.plot(
+    depth_labels,
+    result_df["train_accuracy"],
+    marker="o",
+    label="Training Accuracy" )
+plt.plot(
+    depth_labels,
+    result_df["test_accuracy"],
+    marker="o",
+    label="Testing Accuracy" )
+plt.xlabel("max_depth")
+plt.ylabel("Accuracy")
+plt.title( "Decision Tree - Training vs Testing Accuracy" )
+plt.ylim( 0.5, 1.05 )
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("ex02_decision_tree_train_test accuracy.png", dpi=300, bbox_inches="tight")
+plt.show()
+#15. Gini and entropy
+print("----- GINI VS ENTROPY -----")
+
+criteria = [ "gini", "entropy" ]
+criterion_results = []
+for criterion in criteria:
+    tree = DecisionTreeClassifier(
+        criterion=criterion,
+        random_state=42
+    )
+    tree.fit( X_train, y_train )
+    train_pred = tree.predict( X_train )
+    test_pred = tree.predict( X_test )
+    train_acc = accuracy_score( y_train, train_pred )
+    test_acc = accuracy_score( y_test, test_pred )
+    criterion_results.append(
+        {
+            "criterion": criterion,
+            "train_accuracy": train_acc,
+            "test_accuracy": test_acc,
+            "gap": train_acc - test_acc
+        }
+    )
+
+    criterion_df = pd.DataFrame( criterion_results )
+    print("\nGini vs Entropy:")
+    print( criterion_df.to_string( index=False ) )
+
+# 16. FINAL SUMMARY
+print("----- FINAL SUMMARY ------")
+best_index = result_df[ "test_accuracy" ].idxmax()
+best_model = result_df.loc[ best_index ]
+
+print( f""" 
+Best max_depth: 
+{best_model["max_depth"]} 
+Training Accuracy: 
+{best_model["train_accuracy"]:.4f} 
+Testing Accuracy: 
+{best_model["test_accuracy"]:.4f} 
+Accuracy Gap: 
+{best_model["gap"]:.4f} 
+Fitting: 
+{best_model["fitting"]} """ )
+
+print("\nGini vs Entropy:")
+print( criterion_df.to_string( index=False ) )
+print("\nProgram finished successfully!")
