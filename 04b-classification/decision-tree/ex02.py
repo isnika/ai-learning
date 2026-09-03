@@ -33,6 +33,10 @@ criterion="gini"
 criterion="entropy"
 
 note: Muoosn x200 dau "-"  ==> print ("-" *200)
+
+0 → setosa
+1 → versicolor
+2 → virginica
 '''
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -99,14 +103,67 @@ Lớn nhất 7.9 cm → max
 50% → Q2 / Median (trung vị)
 75% → Q3 (phân vị 75)
 '''
-#2.3 Check the number of each Class - Kiem tra so luong tung class
-print("\n3. Class distribution:")
-print(y.value_counts().sort_index())
+#2.3 Check the number of each Class - Kiem tra so luong tung class (
+print("\n3. Class distribution:") #phân bố số lượng của các class
+print(y.value_counts().sort_index()) # dem sl moi class, sap xep tang dan
+# print(df["target"].value_counts()) # dem sl moi class, sap xep giam dan
 
 print("\n4. Class distribution with names:")
-for class_id, class_name in enumerate(iris.target_names):
-    count = ( y == class_id ).sum()
+for class_id, class_name in enumerate(iris.target_names): #enumerate() lấy cả vị trí (index) và giá trị
+    '''
+iris.target_names
+       ↓
+['setosa', 'versicolor', 'virginica']
+       ↓
+enumerate()
+       ↓
+0 → 'setosa'
+1 → 'versicolor'
+2 → 'virginica'
+       ↓
+(y == class_id)
+       ↓
+Đếm số lượng
+       ↓
+In ra class + tên + số lượng
+    '''
+    count = ( y == class_id ).sum() #dem so
     print(f"{class_id} - {class_name}: {count}")
+
+#2.4  Visualization: Class distribution - Hinh anh truc phan: Phan bo lop (y)
+
+plt.figure(figsize=(8, 5))
+y.value_counts().sort_index().plot(
+    kind='bar'
+    )
+
+plt.title("Iris Class distribution")
+plt.xlabel("Class")
+plt.ylabel("Number Of Samples")
+
+plt.xticks(
+    ticks = [0, 1, 2],
+    labels = iris.target_names,
+    rotation=0
+)
+
+plt.tight_layout()
+plt.show()
+
+#2.5 Visualization: Feature distributions HInh anh truc quan: Phan bo dac trung(x)
+
+df[iris.feature_names].hist(
+    figsize=(12, 8),
+    bins=15
+)
+
+plt.suptitle("Iris Feature Distributions")
+plt.tight_layout()
+plt.show()
+
+#3. Train/test split
+
+
 
 
 
