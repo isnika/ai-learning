@@ -8,7 +8,7 @@ learn AI
 | 02 | [NumPy](02-numpy-base) | Tính toán mảng, vector hóa |
 | 03 | [Pandas](03-pandas-base) | Xử lý dữ liệu dạng bảng |
 | 04 | [Matplotlib](04-matplotlib-base) | Trực quan hóa dữ liệu |
-| 05 | [Statistics](05-statistics-base) | Thống kê cơ bản & xác suất |
+| 05 | [Statistics](05a-statistics-base) | Thống kê cơ bản & xác suất |
 | 05a | [Linear Algebra](05a-linear-algebra-base) | Đại số tuyến tính cho Machine Learning |
 | 05b | [SQL](05b-sql) | Truy vấn và quản lý cơ sở dữ liệu |
 | 05c | [Git](05c-git) | Quản lý mã nguồn với Git & GitHub |
