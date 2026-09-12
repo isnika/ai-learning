@@ -31,12 +31,14 @@ from sklearn.metrics import (
 
 from xgboost import XGBClassifier
 
+#load data
 data = load_breast_cancer(as_frame=True)
 df = data.frame
 
 print("First 5 line: ")
 print(df.head())
 
+#eda
 print("\nDataset shape: ")
 print(df.shape)
 
@@ -63,3 +65,27 @@ print(
     .mul(100) #multiply 100 Tức là nhân các tỷ lệ với 100:
     .round(2) #Làm tròn đến 2 chữ số thập phân
     )
+
+#missing values check
+missing = df.isnull().sum()
+
+print("\nMissing values:")
+print(missing)
+print("\nTotal missing values:")
+print(missing.sum())
+missing_columns = missing[missing > 0]
+if len(missing_columns) == 0:
+    print("No missing values found.")
+else:
+    print("Columns containing missing values:")
+    print(missing_columns)
+
+#categorical features check
+categorial_columns = df.select_dtypes(
+    include=["object", "category"]
+).columns
+
+print("Categorical columns:", list(categorial_columns))
+
+if len(categorial_columns) == 0:
+    print("No categorical columns found.")
