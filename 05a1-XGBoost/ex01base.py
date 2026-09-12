@@ -38,11 +38,17 @@ print("\nTest shape: ")
 print(X_test.shape)
 
 model = XGBClassifier(
-    n_estimators=100,
-    learning_rate=0.1,
-    max_depth=3,
+    n_estimators=100, # số lượng boosting rounds / trees.
+    learning_rate=0.1, # Mỗi tree chỉ đóng góp một phần vào prediction cuối cùng.
+    max_depth=3, #toi da do sau la n
     random_state=42,
 )
+
+"""Mot nguyen tac thuc te: 
+learning_rate thấp
+        +
+n_estimators cao
+"""
 
 model.fit(X_train, y_train)
 
