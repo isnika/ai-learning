@@ -240,4 +240,256 @@ param_grid = {
 print("\nParameter grid:")
 print(param_grid)
 
-#grid
+#grid search + cross validation
+
+grid_search = GridSearchCV(
+    estimator= XGBClassifier(
+        random_state=42,
+    ),
+
+    param_grid=param_grid,
+    cv=cv,
+    scoring="accuracy",
+    n_jobs=1,
+    verbose=2,
+)
+
+grid_search.fit(X_train, y_train)
+
+#best parameters
+print("\nBest parameters:")
+print(grid_search.best_params_)
+print("\nBest cv accuracy:")
+print(f"{grid_search.best_score_:.4f}")
+
+#best model
+best_model = grid_search.best_estimator_
+print("\nBest model:")
+print(best_model)
+
+#final prediction
+
+y_pred_final = best_model.predict(X_test)
+y_proba_final = best_model.predict_proba(X_test)[:,1]
+
+#final evaluation
+final_accuracy = accuracy_score(y_test, y_pred_final)
+final_precision = precision_score(y_test, y_pred_final)
+final_recall = recall_score(y_test, y_pred_final)
+final_f1 = f1_score(y_test, y_pred_final)
+final_auc = roc_auc_score(y_test, y_proba_final)
+
+print("\nFinal accuracy:")
+print(final_accuracy)
+print("\nFinal precision:")
+print(final_precision)
+print("\nFinal recall:")
+print(final_recall)
+print("\nFinal F1:")
+print(final_f1)
+print("\nFinal ROC-AUC:")
+print(final_auc)
+
+#final classification report
+cm_final = confusion_matrix(y_test, y_pred_final)
+
+print("\nFinal Confusion Matrix:")
+print(cm_final)
+
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm_final,
+    display_labels=data.target_names
+)
+
+disp.plot()
+
+plt.title(
+    "Final XGBoost - Confusion Matrix"
+)
+plt.savefig("confusion_matrix.png")
+
+plt.show()
+
+#roc - auc curve
+
+fpr, tpr, thresholds = roc_curve(
+    y_test,
+    y_proba_final
+)
+
+plt.figure(figsize=(7, 5))
+
+plt.plot(
+    fpr,
+    tpr,
+    label=f"AUC = {final_auc:.4f}"
+)
+
+plt.plot(
+    [0, 1],
+    [0, 1],
+    linestyle="--"
+)
+
+plt.xlabel(
+    "False Positive Rate"
+)
+
+plt.ylabel(
+    "True Positive Rate"
+)
+
+plt.title(
+    "XGBoost ROC Curve"
+)
+
+plt.legend()
+plt.savefig("roc_curve.png")
+
+plt.show()
+
+
+ 
+# 27. FEATURE IMPORTANCE
+ 
+
+print("\n" + "=" * 70)
+print("FEATURE IMPORTANCE")
+print("=" * 70)
+
+feature_importance = pd.Series(
+    best_model.feature_importances_,
+    index=X.columns
+)
+
+feature_importance = (
+    feature_importance
+    .sort_values(ascending=False)
+)
+
+print(
+    feature_importance.head(15)
+)
+
+
+ 
+# 28. FEATURE IMPORTANCE VISUALIZATION
+ 
+
+top_features = (
+    feature_importance
+    .head(15)
+    .sort_values()
+)
+
+plt.figure(figsize=(8, 6))
+
+top_features.plot(
+    kind="barh"
+)
+
+plt.title(
+    "Top 15 XGBoost Feature Importance"
+)
+
+plt.xlabel(
+    "Importance"
+)
+
+plt.tight_layout()
+plt.savefig("feature_importance.png")
+
+plt.show()
+
+
+ 
+# 29. TRAIN VS TEST
+ 
+
+print("\n" + "=" * 70)
+print("TRAIN VS TEST")
+print("=" * 70)
+
+train_pred = best_model.predict(
+    X_train
+)
+
+test_pred = best_model.predict(
+    X_test
+)
+
+train_accuracy = accuracy_score(
+    y_train,
+    train_pred
+)
+
+test_accuracy = accuracy_score(
+    y_test,
+    test_pred
+)
+
+gap = (
+    train_accuracy -
+    test_accuracy
+)
+
+print(
+    f"Train Accuracy: {train_accuracy:.4f}"
+)
+
+print(
+    f"Test Accuracy : {test_accuracy:.4f}"
+)
+
+print(
+    f"Accuracy Gap  : {gap:.4f}"
+)
+
+
+ 
+# 30. FINAL SUMMARY
+ 
+
+print("\n" + "=" * 70)
+print("FINAL SUMMARY")
+print("=" * 70)
+
+print(
+    f"Best Parameters: {grid_search.best_params_}"
+)
+
+print(
+    f"Best CV Score  : {grid_search.best_score_:.4f}"
+)
+
+print(
+    f"Test Accuracy  : {final_accuracy:.4f}"
+)
+
+print(
+    f"Test Precision : {final_precision:.4f}"
+)
+
+print(
+    f"Test Recall    : {final_recall:.4f}"
+)
+
+print(
+    f"Test F1        : {final_f1:.4f}"
+)
+
+print(
+    f"Test ROC-AUC   : {final_auc:.4f}"
+)
+
+print(
+    f"Train Accuracy : {train_accuracy:.4f}"
+)
+
+print(
+    f"Accuracy Gap   : {gap:.4f}"
+)
+
+
+
+
