@@ -9,6 +9,8 @@ Malignant (M) → ác tính
 Benign (B) → lành tính
 
 '''
+from statistics import correlation
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -28,6 +30,8 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve
 )
+
+from matplotlib import pyplot as plt
 
 from xgboost import XGBClassifier
 
@@ -89,3 +93,151 @@ print("Categorical columns:", list(categorial_columns))
 
 if len(categorial_columns) == 0:
     print("No categorical columns found.")
+#numerical features
+
+numerical_columns = df.select_dtypes(
+    include=["number"]
+).columns
+print("\nNumber of numerrical columns:")
+print(len(numerical_columns))
+
+print("\nNumerical columns:")
+print(numerical_columns)
+
+#correlation
+correlation = df.corr(numeric_only=True)
+print("\nCorrelation with target: ")
+print(correlation["target"]
+      .sort_values(ascending=False)
+      )
+
+#feature engineering
+# Tạo một vài feature mới để thực hành
+
+df["radius_texture_ratio"] = (
+    df["mean radius"] /
+    df["mean texture"]
+)
+
+df["area_radius_ratio"] = (
+    df["mean area"] /
+    df["mean radius"]
+)
+
+print("\nNew features:")
+print(
+    df[
+        [
+            "radius_texture_ratio",
+            "area_radius_ratio"
+        ]
+    ].head()
+)
+
+#train/test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify = y
+)
+
+print("\nX_train shape: ")
+print(X_train.shape)
+print("X_test shape")
+print(X_test.shape)
+print("\ny_train shape: ")
+print(y_train.shape)
+print("\ny_test shape: ")
+print(y_test.shape)
+
+#baseline xgboost
+model = XGBClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3,
+    random_state=42,
+)
+
+model.fit(X_train, y_train)
+
+print("Baseline model trained successfully")
+
+#baseline prediction
+y_pred = model.predict(X_test)
+
+y_proba = model.predict_proba(X_test) [:,1] #probability: xac suat
+
+#baseline evaluation
+print("\nConfusion matrix:")
+
+baseline_accuracy = accuracy_score(y_test, y_pred)
+baseline_precision = precision_score(y_test, y_pred)
+baseline_recall = recall_score(y_test, y_pred)
+baseline_f1 = f1_score(y_test, y_pred)
+
+print("\nBaseline accuracy:")
+print(baseline_accuracy)
+print("\nBaseline precision:")
+print(baseline_precision)
+print("\nBaseline recall:")
+print(baseline_recall)
+
+print("\nClasification report:")
+print(classification_report(y_test, y_pred))
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=data.target_names
+))
+
+cm = confusion_matrix(y_test, y_pred)
+print("\nConfusion matrix:")
+print(cm)
+
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=data.target_names,
+)
+
+disp.plot()
+plt.title("Baseline XGBoost - Confusion matrix")
+plt.savefig("confusion_matrix.png")
+plt.show()
+
+#cross validation
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42,
+)
+
+cv_score = cross_val_score(
+    model,
+    X_train,
+    y_train,
+    cv=cv,
+    scoring="accuracy",
+)
+
+print("\nCV scores: ")
+for i, score in enumerate(
+    cv_score,
+    start=1,
+):
+    print(f"Fold {i}: {score:.4f}")
+
+print(f"\nMean CV accuracy: {cv_score.mean():.4f}")
+print(f"Std CB accuracy: {cv_score.std():.4f}") #standard deviation
+
+param_grid = {
+    "n_estimators": [100, 200],
+    "learning_rate": [0.05, 0.1],
+    "max_depth": [1, 3, 4],
+}
+
+print("\nParameter grid:")
+print(param_grid)
+
+#grid
