@@ -1,0 +1,38 @@
+load_breast_cancer()
+        ↓
+      EDA
+        ↓
+Missing Value Check
+        ↓
+Categorical Feature Check
+        ↓
+Feature Engineering
+        ↓
+Train / Test Split
+        ↓
+Baseline XGBoost
+        ↓
+Baseline Evaluation
+        ↓
+Stratified K-Fold
+        ↓
+GridSearchCV
+        ↓
+Best Parameters
+        ↓
+Best XGBoost Model
+        ↓
+Test Set
+        ↓
+Accuracy
+Precision
+Recall
+F1
+ROC-AUC
+Confusion Matrix
+        ↓
+Feature Importance
+        ↓
+Train vs Test
+        ↓
+Final Conclusion
